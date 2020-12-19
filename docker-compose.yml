@@ -1,0 +1,64 @@
+version: "3"
+
+services:
+    mysql:
+        image: mysql:5.7
+        container_name: mysql-zhuan
+        restart: always
+        ports:
+            - "3366:3306"
+        volumes:
+            - ./data/mysql:/var/lib/mysql
+            - ./etc/my.cnf:/etc/my.cnf
+        environment:
+            MYSQL_ROOT_PASSWORD: "${mysql_root_password}"
+            TZ: Asia/Shanghai
+        env_file:
+            - ./env/common.env
+        networks:
+            - net-web
+    redis:
+        image: redis:6.0.9
+        container_name: redis-zhuan
+        restart: always
+        ports:
+            - "6399:6379"
+        volumes:
+            - ./data/redis:/data
+            - ./etc/redis.conf:/etc/redis.conf
+        command:
+            redis-server /etc/redis.conf --requirepass ${redis_requirepass}
+        env_file:
+            - ./env/common.env
+        networks:
+            - net-web
+    php:
+        image: debmzhang/php7.4.13:lnmp-nerd-v1
+        container_name: php-zhuan
+        ports:
+            - "9000"
+        volumes:
+            - ./logs/php:/usr/local/php/var/log
+            - ./etc/php-fpm.conf:/usr/local/php/etc/php-fpm.conf
+            - ./www:/www
+            - ./tmp:/tmp
+        networks:
+            - net-web
+    nginx:
+        image: debmzhang/nginx:lnmp-nerd-v1
+        container_name: nginx-zhuan
+        depends_on:
+            - php
+        ports:
+            - "9601:9601"
+            - "9602:9602"
+        volumes:
+            - ./www:/www
+            - ./conf.d:/etc/nginx/conf.d
+            - ./logs/nginx:/var/log/nginx
+            - ./tmp:/tmp
+        networks:
+            - net-web
+
+networks:
+    net-web:
