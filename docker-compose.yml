@@ -35,6 +35,7 @@ services:
     php:
         image: debmzhang/php7.4.13:lnmp-nerd-v1
         container_name: php-zhuan
+        restart: always
         ports:
             - "9000"
         volumes:
@@ -47,6 +48,7 @@ services:
     nginx:
         image: debmzhang/nginx:lnmp-nerd-v1
         container_name: nginx-zhuan
+        restart: always
         depends_on:
             - php
         ports:
