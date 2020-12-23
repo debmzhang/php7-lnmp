@@ -13,8 +13,6 @@ services:
         environment:
             MYSQL_ROOT_PASSWORD: "${mysql_root_password}"
             TZ: Asia/Shanghai
-        env_file:
-            - ./env/common.env
         networks:
             - net-web
     redis:
@@ -28,8 +26,6 @@ services:
             - ./etc/redis.conf:/etc/redis.conf
         command:
             redis-server /etc/redis.conf --requirepass ${redis_requirepass}
-        env_file:
-            - ./env/common.env
         networks:
             - net-web
     php:
